@@ -1,0 +1,24 @@
+{
+    "layout": {
+	"width":2,
+	"height":2,
+	"grid":[[1,0], [0,1]]
+    },
+    "banks": [
+	{
+	    "grid":[
+		{
+		    "label":"test",
+		    "osc":"testosc",
+		    "send":"bla"
+		},
+		{
+		    "label":"test",
+		    "osc":"testosc",
+		    "send":"bla"
+		}
+	    ]
+	}
+    ]
+}
+    
