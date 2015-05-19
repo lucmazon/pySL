@@ -4,6 +4,7 @@ from Tkinter import *
 import json
 import liblo,sys
 
+
 with open("mapping.json") as file:
     data = json.load(file)
 
@@ -17,46 +18,58 @@ root = Tk()
 default_color = 'blue'
 pressed_color = 'red'
 
-try:
-    server = liblo.Server(8888)
-except liblo.ServerError, err:
-    print err
-    sys.exit()
+current_bank = 0
 
-def button(path, args):
-    pressed = args[0]
-    print "message received '%s' with index '%d'" % (path, pressed)
-    draw_items(0, pressed-1)
-
-server.add_method('/pedalBoard/button' , 'i', button)
+def callback(path, args):
+    value = args[0]
+    print "message received '%s' with value '%s'" % (path, value)
+    for i, message_mapping in enumerate(layout["osc"]):
+        if message_mapping[1] == value:
+            print "message matches item %d" % i
+            draw_items(current_bank, i)
 
 def draw_items(bank_id, item_id=-1):
     for i, item in enumerate(grid):
         current_color = default_color
-        label = data["banks"][bank_id]["grid"][i]["label"]
+
+        banks = data["banks"]
+        bank_grid = banks[bank_id]["grid"][i]
+        label = bank_grid["label"]
         row = grid[i][0]
         column = grid[i][1]
-        
+
+        bank = 0
         if i == item_id:
+            try:
+                bank = bank_grid["bank"]
+            except KeyError, err:
+                pass
             current_color = pressed_color
             
         Label(text=label, bg=current_color, fg='white', width=15).grid(row=row,column=column)
 
+        global current_bank
+        current_bank = current_bank + bank
+        if current_bank >= len(data["banks"]):
+            current_bank = 0
+
 def loop():
     result = server.recv(0)
     if not result:
-        draw_items(0)
+        draw_items(current_bank)
     root.after(50, loop)
-        
-def task(index):
-    color = ['blue', 'red']
-    if index > 1:
-        index = 0
-    for i, item in enumerate(grid):
-        Label(text=data["banks"][0]["grid"][i]["label"], bg=color[index], fg='white', relief=RIDGE,width=15).grid(row=grid[i][0],column=grid[i][1])
-    root.after(500, task, index + 1)
-    
 
-draw_items(0)
+try:
+    server = liblo.Server(8888)
+    target = liblo.Server(8000)
+except liblo.ServerError, err:
+    print err
+    sys.exit()
+
+# register osc messages
+for message in layout["osc"]:
+    server.add_method(message[0], None, callback)
+    
+draw_items(current_bank)
 root.after(0, loop)
 mainloop()

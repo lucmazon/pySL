@@ -2,23 +2,42 @@
     "layout": {
 	"width":2,
 	"height":2,
-	"grid":[[1,0], [0,1]]
+	"grid":[[1,0], [0,1]],
+	"osc":[
+	    ["/pedalBoard/button", 1],
+	    ["/pedalBoard/button", 2]
+	]
     },
     "banks": [
 	{
 	    "grid":[
 		{
 		    "label":"test",
-		    "osc":"testosc",
 		    "send":"bla"
 		},
 		{
 		    "label":"test",
+		    "bank":1,
+		    "send":["/sl/1/hit", "pause"]
+		}
+	    ]
+	},
+	{
+	    "grid":[
+		{
+		    "label":"b21",
 		    "osc":"testosc",
+		    "send":"bla"
+		},
+		{
+		    "label":"b22",
+		    "osc":"testosc",
+		    "bank":1,
 		    "send":"bla"
 		}
 	    ]
 	}
+
     ]
 }
     
