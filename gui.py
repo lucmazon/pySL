@@ -1,14 +1,17 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-import json
-import liblo,sys
+import json, liblo, sys, argparse
 
+parser = argparse.ArgumentParser(description='converts osc messages with a fancy gui')
+parser.add_argument('-c', '--config', required=True, help='the configuration file')
+parser.add_argument('-t', '--target-host', default='localhost', help='the ip address or domain name of the machine where to send converted OSC messages')
+parser.add_argument('-p', '--input-port', type=int, default=8888, help='the port on the machine receiving the OSC messages to convert')
+parser.add_argument('-P', '--target-port', type=int, default=9951, help='the port on the machine where to send converted OSC messages')
+args = vars(parser.parse_args())
 
-with open("mapping.json") as file:
+with open(args['config']) as file:
     data = json.load(file)
-
-print data
 
 layout = data["layout"]
 grid = layout["grid"]
@@ -70,7 +73,7 @@ def update_bank(bank_value):
             current_bank = 0
         else:
             current_bank += 1
-    elif arg == "previous":
+    elif bank_value == "previous":
         if current_bank == 0:
             current_bank = len(banks) - 1
         else:
@@ -84,8 +87,8 @@ def loop():
     root.after(50, loop)
 
 try:
-    server = liblo.Server(8888)
-    target = liblo.Address(8000)
+    server = liblo.Server(args['input_port'])
+    target = liblo.Address(args['target_host'], args['target_port'])
 except liblo.ServerError, err:
     print err
     sys.exit()
