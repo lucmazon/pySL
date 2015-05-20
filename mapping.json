@@ -13,12 +13,11 @@
 	    "grid":[
 		{
 		    "label":"test",
-		    "send":"bla"
+		    "send":["/sl/1/hit", "pause"]
 		},
 		{
 		    "label":"test",
-		    "bank":1,
-		    "send":["/sl/1/hit", "pause"]
+		    "bank":"next"
 		}
 	    ]
 	},
@@ -26,18 +25,14 @@
 	    "grid":[
 		{
 		    "label":"b21",
-		    "osc":"testosc",
-		    "send":"bla"
+		    "send":["/sl/1/hit", "pause"]
 		},
 		{
 		    "label":"b22",
-		    "osc":"testosc",
-		    "bank":1,
-		    "send":"bla"
+		    "bank":"next"
 		}
 	    ]
 	}
-
     ]
 }
     
