@@ -1,7 +1,8 @@
 #!/usr/bin/env python
 
 from Tkinter import *
-import json, liblo, sys, argparse
+import commentjson, liblo, sys, argparse
+# pip install pyliblo commentjson
 
 parser = argparse.ArgumentParser(description='converts osc messages with a fancy gui')
 parser.add_argument('-c', '--config', required=True, help='the configuration file')
@@ -11,7 +12,7 @@ parser.add_argument('-P', '--target-port', type=int, default=9951, help='the por
 args = vars(parser.parse_args())
 
 with open(args['config']) as file:
-    data = json.load(file)
+    data = commentjson.load(file)
 
 layout = data["layout"]
 grid = layout["grid"]
