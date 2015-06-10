@@ -1,40 +1,91 @@
+// My custom footswitches have this disposition:
+// +--------------------+
+// |     5   6   7      |
+// |                    |
+// |   1   2   3   4    |
+// +--------------------+
+
 {
     "layout": { // layout object, describing how the button are disposed and what osc message they match
-	"width":2, // width of the grid
+	"width":7, // width of the grid
 	"height":2, // height of the grid
-	"grid":[[1,0], [0,1]], // list containing the coordinates (x, y) of the buttons, (0, 0) being the top-left corner.
-	                       // the order in which the buttons are given must correspond to their configuration below
+	"grid":[[0,1], [2,1], [4,1], [6,1], [1,0], [3,0], [5,0]], // list containing the coordinates (x, y) of the buttons, (0, 0) being the top-left corner.
+                                                              // the order in which the buttons are given must correspond to their configuration below
 	"osc":[ // osc message matched by each button
 	    ["/pedalBoard/button", 1],
-	    ["/pedalBoard/button", 2]
+	    ["/pedalBoard/button", 2],
+	    ["/pedalBoard/button", 3],
+	    ["/pedalBoard/button", 4],
+	    ["/pedalBoard/button", 5],
+	    ["/pedalBoard/button", 6],
+	    ["/pedalBoard/button", 7]
 	]
     },
     "banks": [ // list of possible banks if you don't have a lot of buttons
 	{
 	    "grid":[
 		{
-		    "label":"test", // the label displayed for this button in this bank
-		    "send":["/sl/1/hit", "pause"] // OPTIONAL the osc message to send
+		    "label":"record", // the label displayed for this button in this bank
+		    "send":["/sl/1/hit", "record"] // OPTIONAL the osc message to send
 		    // either send an osc message or use the "bank" key below
 		},
 		{
-		    "label":"test",
+		    "label":"undo",
+		    "send":["/sl/1/hit", "undo"]
+		},
+		{
+		    "label":"overdub",
+		    "send":["/sl/1/hit", "overdub"]
+		},
+		{
+		    "label":"mute",
+		    "send":["/sl/1/hit", "mute"]
+		},
+		{
+		    "label":"next",
+		    "send":["/set", "select_next_loop"]
+		},
+		{
+		    "label":"undo_all",
+		    "send":["/sl/1/hit", "undo_all"]
+		},
+		{
+		    "label":"bank",
 		    "bank":"next" // OPTIONAL allows changing the bank (either "next" or "previous").
 		}
-	    ]
+		]
 	},
-	{
+    {
 	    "grid":[
 		{
-		    "label":"b21",
+		    "label":"record",
+		    "send":["/sl/1/hit", "record"]
+		},
+		{
+		    "label":"overdub",
+		    "send":["/sl/1/hit", "overdub"]
+		},
+		{
+		    "label":"undo",
+		    "send":["/sl/1/hit", "undo"]
+		},
+		{
+		    "label":"mute",
+		    "send":["/sl/1/hit", "mute"]
+		},
+		{
+		    "label":"next",
+		    "send":["/set", "select_next_loop"]
+		},
+		{
+		    "label":"pause",
 		    "send":["/sl/1/hit", "pause"]
 		},
 		{
-		    "label":"b22",
+		    "label":"bank",
 		    "bank":"next" // if there is no further bank, the selection will cycle through the banks
 		}
 	    ]
 	}
     ]
 }
-    

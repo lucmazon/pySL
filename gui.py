@@ -38,8 +38,8 @@ def unpack(i):
         bank = bank_grid["bank"]
     except KeyError, err:
         pass
-    row = grid[i][0]
-    column = grid[i][1]
+    row = grid[i][1]
+    column = grid[i][0]
     return banks, bank_grid, label, send, bank, row, column
     
 def callback(path, args):
