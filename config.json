@@ -43,7 +43,7 @@
 		},
 		{
 		    "label":"next",
-		    "send":["/set", "select_next_loop"]
+		    "send":["/set", "select_next_loop 1"]
 		},
 		{
 		    "label":"undo_all",
