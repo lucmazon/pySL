@@ -10,10 +10,11 @@ import commentjson
 # pip install commentjson
 
 class Item:
-    def __init__(self, id, label, send, bank, row, column):
+    def __init__(self, id, label, sendValue, sendMessage, bank, row, column):
         self.id = id
         self.label = label
-        self.send = send
+        self.sendValue = sendValue
+        self.sendMessage = sendMessage
         self.bank = bank
         self.row = row
         self.column = column
@@ -51,10 +52,12 @@ class Config:
     def get_item(self, i):
         bank_grid = self.banks[self.current_bank]['grid'][i]
         label = bank_grid['label']
-        send = None
+        sendValue = None
+        sendMessage = None
         bank = None
         try:
-            send = bank_grid['send']
+            sendValue = bank_grid['send']
+            sendMessage = liblo.Message(sendValue[0], *sendValue[1:])
         except KeyError, err:
             pass
         try:
@@ -63,7 +66,7 @@ class Config:
             pass
         row = self.grid[i][1]
         column = self.grid[i][0]
-        return Item(i, label, send, bank, row, column)
+        return Item(i, label, sendValue, sendMessage, bank, row, column)
 
 class Gui:
     def __init__(self, master, config, endApplication):
@@ -133,9 +136,9 @@ class ThreadedClient:
                 if self.config.update_bank(item):
                     self.gui.update_labels()
                 self.master.after(200, self.gui.release_label, i)
-                if item.send:
-                    print "sending osc message '%s %s'" % (item.send[0], item.send[1])
-                    liblo.send(self.target, item.send[0], item.send[1])
+                if item.sendMessage:
+                    print "sending osc message '%s'" % (item.sendValue)
+                    liblo.send(self.target, item.sendMessage)
 
     def end_application(self):
         self.master.destroy()

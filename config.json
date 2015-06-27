@@ -26,28 +26,28 @@
 	    "grid":[
 		{
 		    "label":"record", // the label displayed for this button in this bank
-		    "send":["/sl/1/hit", "record"] // OPTIONAL the osc message to send
+		    "send":["/sl/-3/hit", "record"] // OPTIONAL the osc message to send
 		    // either send an osc message or use the "bank" key below
 		},
 		{
 		    "label":"undo",
-		    "send":["/sl/1/hit", "undo"]
+		    "send":["/sl/-3/hit", "undo"]
 		},
 		{
 		    "label":"overdub",
-		    "send":["/sl/1/hit", "overdub"]
+		    "send":["/sl/-3/hit", "overdub"]
 		},
 		{
 		    "label":"mute",
-		    "send":["/sl/1/hit", "mute"]
+		    "send":["/sl/-3/hit", "mute"]
 		},
 		{
 		    "label":"next",
-		    "send":["/set", "select_next_loop 1"]
+		    "send":["/sl/-2/set", "select_next_loop", 1.0]
 		},
 		{
 		    "label":"undo_all",
-		    "send":["/sl/1/hit", "undo_all"]
+		    "send":["/sl/-3/hit", "undo_all"]
 		},
 		{
 		    "label":"bank",
@@ -59,27 +59,27 @@
 	    "grid":[
 		{
 		    "label":"record",
-		    "send":["/sl/1/hit", "record"]
+		    "send":["/sl/-3/hit", "record"]
 		},
 		{
 		    "label":"overdub",
-		    "send":["/sl/1/hit", "overdub"]
+		    "send":["/sl/-3/hit", "overdub"]
 		},
 		{
 		    "label":"undo",
-		    "send":["/sl/1/hit", "undo"]
+		    "send":["/sl/-3/hit", "undo"]
 		},
 		{
 		    "label":"mute",
-		    "send":["/sl/1/hit", "mute"]
+		    "send":["/sl/-3/hit", "mute"]
 		},
 		{
 		    "label":"next",
-		    "send":["/set", "select_next_loop"]
+		    "send":["/sl/-2/set", "select_next_loop", 1.0]
 		},
 		{
 		    "label":"pause",
-		    "send":["/sl/1/hit", "pause"]
+		    "send":["/sl/-3/hit", "pause"]
 		},
 		{
 		    "label":"bank",
