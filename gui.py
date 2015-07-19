@@ -1,13 +1,14 @@
-#!/usr/bin/env python
+#!/usr/bin/python3
 
-from Tkinter import *
+from tkinter import *
+# apt-get install python-tk
 import sys
 import argparse
 import threading
 import liblo
-# pip install pyliblo
-import commentjson
-# pip install commentjson
+# pip3 install pyliblo
+import yaml
+# pip3 install pyyaml
 
 class Item:
     def __init__(self, id, label, sendValue, sendMessage, bank, row, column):
@@ -58,11 +59,11 @@ class Config:
         try:
             sendValue = bank_grid['send']
             sendMessage = liblo.Message(sendValue[0], *sendValue[1:])
-        except KeyError, err:
+        except KeyError as err:
             pass
         try:
             bank = bank_grid['bank']
-        except KeyError, err:
+        except KeyError as err:
             pass
         row = self.grid[i][1]
         column = self.grid[i][0]
@@ -108,8 +109,8 @@ class ThreadedClient:
         try:
             self.server = liblo.Server(self.config.input_port)
             self.target = liblo.Address(self.config.target_host, self.config.target_port)
-        except liblo.ServerError, err:
-            print err
+        except liblo.ServerError as err:
+            print(err)
             sys.exit()
         self.master = master
         self.gui = Gui(master, self.config, self.end_application)
@@ -127,17 +128,17 @@ class ThreadedClient:
 
     def server_callback(self, path, args):
         value = args[0]
-        print "message received '%s' with value '%s'" % (path, value)
+        print("message received '%s' with value '%s'" % (path, value))
         for i, message_mapping in enumerate(self.config.layout["osc"]):
             if message_mapping[1] == value:
-                print "message matches item %d" % i
+                print("message matches item %d" % i)
                 item = self.config.get_item(i)
                 self.gui.press_label(i)
                 if self.config.update_bank(item):
                     self.gui.update_labels()
                 self.master.after(200, self.gui.release_label, i)
                 if item.sendMessage:
-                    print "sending osc message '%s'" % (item.sendValue)
+                    print("sending osc message '%s'" % (item.sendValue))
                     liblo.send(self.target, item.sendMessage)
 
     def end_application(self):
@@ -152,7 +153,7 @@ parser.add_argument('-P', '--target-port', type=int, default=9951, help='the por
 args = vars(parser.parse_args())
 
 with open(args['config']) as file:
-    data = commentjson.load(file)
+    data = yaml.load(file)
 
 root = Tk()
 client = ThreadedClient(root, data, args)

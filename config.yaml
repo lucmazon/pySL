@@ -1,0 +1,131 @@
+---
+# My custom footswitches have this disposition:
+# +--------------------+
+# |     5   6   7      |
+# |                    |
+# |   1   2   3   4    |
+# +--------------------+
+
+  layout:  # layout object, describing how the button are disposed and what osc message they match
+    width: 7  # width of the grid
+    height: 2  # height of the grid
+    grid: # list containing the coordinates (x, y) of the buttons, (0, 0) being the top-left corner.
+          # the order in which the buttons are given must correspond to their configuration below
+      -
+        - 0
+        - 1
+      -
+        - 2
+        - 1
+      -
+        - 4
+        - 1
+      -
+        - 6
+        - 1
+      -
+        - 1
+        - 0
+      -
+        - 3
+        - 0
+      -
+        - 5
+        - 0
+    osc: # osc message matched by each button
+      -
+        - "/pedalBoard/button"
+        - 1
+      -
+        - "/pedalBoard/button"
+        - 2
+      -
+        - "/pedalBoard/button"
+        - 3
+      -
+        - "/pedalBoard/button"
+        - 4
+      -
+        - "/pedalBoard/button"
+        - 5
+      -
+        - "/pedalBoard/button"
+        - 6
+      -
+        - "/pedalBoard/button"
+        - 7
+  banks: # list of possible banks if you don't have a lot of buttons
+    -
+      grid:
+        -
+          label: "record" # the label displayed for this button in this bank
+          send:
+            - "/sl/-3/hit"
+            - "record" # OPTIONAL the osc message to send
+                       # either send an osc message or use the "bank" key below
+                       # "-3" means selected loop
+        -
+          label: "undo"
+          send:
+            - "/sl/-3/hit"
+            - "undo"
+        -
+          label: "overdub"
+          send:
+            - "/sl/-3/hit"
+            - "overdub"
+        -
+          label: "mute"
+          send:
+            - "/sl/-3/hit"
+            - "mute"
+        -
+          label: "next"
+          send:
+            - "/sl/-2/set"
+            - "select_next_loop"
+            - 1
+        -
+          label: "undo_all"
+          send:
+            - "/sl/-3/hit"
+            - "undo_all"
+        -
+          label: "bank"
+          bank: "next" # OPTIONAL allows changing the bank (either "next" or "previous")
+    -
+      grid:
+        -
+          label: "record"
+          send:
+            - "/sl/-3/hit"
+            - "record"
+        -
+          label: "overdub"
+          send:
+            - "/sl/-3/hit"
+            - "overdub"
+        -
+          label: "undo"
+          send:
+            - "/sl/-3/hit"
+            - "undo"
+        -
+          label: "mute"
+          send:
+            - "/sl/-3/hit"
+            - "mute"
+        -
+          label: "next"
+          send:
+            - "/sl/-2/set"
+            - "select_next_loop"
+            - 1
+        -
+          label: "pause"
+          send:
+            - "/sl/-3/hit"
+            - "pause"
+        -
+          label: "bank"
+          bank: "next" # if there is no further bank, the selection will cycle through the banks
