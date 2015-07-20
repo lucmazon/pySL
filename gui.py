@@ -1,14 +1,11 @@
 #!/usr/bin/python3
 
 from tkinter import *
-# apt-get install python-tk
 import sys
 import argparse
 import threading
 import liblo
-# pip3 install pyliblo
 import yaml
-# pip3 install pyyaml
 
 class Item:
     def __init__(self, id, label, sendValue, sendMessage, bank, row, column):
@@ -120,7 +117,6 @@ class ThreadedClient:
         self.serverThread.start()
 
     def run_server(self):
-        # register osc messages
         for message in self.config.layout["osc"]:
             self.server.add_method(message[0], None, self.server_callback)
         while self.running:
