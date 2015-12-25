@@ -1,0 +1,48 @@
+---
+# My custom footswitches have this disposition:
+
+# +-----------+  +-----------+
+# |     2     |  |     5     |
+# | 1       3 |  | 4       6 |
+# |           |  |           |
+# +-----------+  +-----------+
+
+physical_layout:  # layout object, describing how the button are physically placed
+  width: 6  # width of the grid
+  height: 2  # height of the grid
+  grid: # list containing the coordinates (x, y) of the buttons, (0, 0) being the top-left corner.
+        # the order in which the buttons are given must correspond to their configuration below
+    [ [0,1], [1,0], [2,1], [3,1], [4,0], [5,1] ]
+layers: # list of possible layers if you don't have a lot of buttons
+  - [
+    { label: "all", modal: 1 },
+    { label: "move", modal: 2 },
+    { label: "specials", modal: 3 },
+    { label: "record", send: ["/sl/-3/hit", "record"] }, # -3 means selected loop
+    { label: "overdub", send: ["/sl/-3/hit", "overdub"] },
+    { label: "undo", send: ["/sl/-3/hit", "undo"] }
+  ]
+  - [
+    { label: "all", modal: 1 },
+    { label: "move", modal: 2 },
+    { label: "specials", modal: 3 },
+    { label: "next", send: ["/sl/-2/set", "select_next_loop", 0.0] },
+    { label: "previous", send: ["/sl/-2/set", "select_prev_loop", 0.0] },
+    { label: "undo all", send: ["/sl/-1/hit", "undo_all"] },
+  ]
+  - [
+    { label: "all", modal: 1 },
+    { label: "move", modal: 2 },
+    { label: "specials", modal: 3 },
+    { label: "b", send: ["/sl/", ""] },
+    { label: "b", send: ["/sl/", ""] },
+    { label: "b", send: ["/sl/", ""] },
+  ]
+  - [
+    { label: "all", modal: 1 },
+    { label: "move", modal: 2 },
+    { label: "specials", modal: 3 },
+    { label: "c", send: ["/sl/", ""] },
+    { label: "c", send: ["/sl/", ""] },
+    { label: "c", send: ["/sl/", ""] },
+  ]
