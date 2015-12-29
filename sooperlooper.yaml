@@ -17,32 +17,24 @@ layers: # list of possible layers if you don't have a lot of buttons
   - [
     { label: "all", modal: 1 },
     { label: "move", modal: 2 },
-    { label: "specials", modal: 3 },
+    { label: "undo", send: ["/sl/-3/hit", "undo"] },
     { label: "record", send: ["/sl/-3/hit", "record"] }, # -3 means selected loop
     { label: "overdub", send: ["/sl/-3/hit", "overdub"] },
-    { label: "undo", send: ["/sl/-3/hit", "undo"] }
+    { label: "multiply", send: ["/sl/-3/hit", "multiply"] }
   ]
   - [
     { label: "all", modal: 1 },
     { label: "move", modal: 2 },
-    { label: "specials", modal: 3 },
+    { label: "undo_all", send: ["/sl/-3/hit", "undo_all"] },
+    { label: "solo", send: ["/sl/-3/hit", "solo"] },
     { label: "next", send: ["/sl/-2/set", "select_next_loop", 0.0] },
     { label: "previous", send: ["/sl/-2/set", "select_prev_loop", 0.0] },
-    { label: "undo all", send: ["/sl/-1/hit", "undo_all"] },
   ]
   - [
     { label: "all", modal: 1 },
     { label: "move", modal: 2 },
-    { label: "specials", modal: 3 },
+    { label: "undo_all", send: ["/sl/-1/hit", "undo_all"] },
     { label: "b", send: ["/sl/", ""] },
     { label: "b", send: ["/sl/", ""] },
     { label: "b", send: ["/sl/", ""] },
-  ]
-  - [
-    { label: "all", modal: 1 },
-    { label: "move", modal: 2 },
-    { label: "specials", modal: 3 },
-    { label: "c", send: ["/sl/", ""] },
-    { label: "c", send: ["/sl/", ""] },
-    { label: "c", send: ["/sl/", ""] },
   ]
