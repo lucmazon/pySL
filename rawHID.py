@@ -43,6 +43,7 @@ class RawHID:
             self.statuses.append(Button(index, ButtonStatus.RELEASED))
 
     def buttonPressed(self, data):
+        print(data)
         changed_buttons = [] # type: List[Button]
         for index, key in enumerate([3, 5, 7, 9, 11, 13]):
             new_status = Button(index, ButtonStatus.PRESSED if data[key] else ButtonStatus.RELEASED)

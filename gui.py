@@ -2,11 +2,9 @@
 # -*- coding: utf-8 -*-
 
 from tkinter import *
-import sys
 import argparse
 import threading
 import yaml
-import liblo
 
 from rawHID import RawHID, ButtonStatus
 import config
@@ -43,11 +41,6 @@ class Gui:
 class ThreadedClient:
     def __init__(self, master, data, args):
         self.config = config.Config(data, args)
-        try:
-            self.target = liblo.Address(self.config.target_host, self.config.target_port)
-        except liblo.ServerError as err:
-            print(err)
-            sys.exit()
         self.first_run = True
         self.master = master
         self.gui = Gui(master, self.config, self.end_application)
@@ -75,9 +68,10 @@ class ThreadedClient:
                     else:
                         self.config.switch_to_layer(0)
                 self.gui.update_labels()
-                if changed_key.status == ButtonStatus.PRESSED and switch.osc_message:
-                    print("sending osc message '{0}, {1}'".format(switch.osc_message.path, switch.osc_message.args))
-                    liblo.send(self.target, switch.osc_message.message)
+                if changed_key.status == ButtonStatus.PRESSED and switch.osc_messages:
+                    for osc_message in switch.osc_messages:
+                        print("sending osc message '{0}, {1}'".format(osc_message.path, osc_message.args))
+                        osc_message.send()
 
     def end_application(self):
         self.master.destroy()
@@ -86,10 +80,6 @@ class ThreadedClient:
 
 parser = argparse.ArgumentParser(description='converts osc messages with a fancy gui')
 parser.add_argument('-c', '--config', required=True, help='the configuration file')
-parser.add_argument('-t', '--target-host', default='localhost',
-                    help='the ip address or domain name of the machine where to send converted OSC messages')
-parser.add_argument('-p', '--target-port', type=int, default=9951,
-                    help='the port on the machine where to send converted OSC messages')
 args = vars(parser.parse_args())
 
 with open(args['config']) as file:
