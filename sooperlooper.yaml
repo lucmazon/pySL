@@ -1,11 +1,12 @@
 ---
 # My custom footswitches have this disposition:
 
-# +-----------+  +-----------+
-# |     2     |  |     5     |
-# | 1       3 |  | 4       6 |
-# |           |  |           |
-# +-----------+  +-----------+
+# +-----------+  +-----------+   +---+
+# |     2     |  |     5     |   | o |
+# | 1       3 |  | 4       6 |   | o |
+# |           |  |           |   | o |
+# +-----------+  +-----------+   +---+
+#                                volume pedal
 
 osc:
   - { name: "sooperlooper", host: "localhost", port: "9951" }
@@ -41,3 +42,4 @@ layers: # list of possible layers if you don't have a lot of buttons
     { label: "b", sooperlooper: ["/sl/", ""] },
     { label: "b", sooperlooper: ["/sl/", ""] },
   ]
+pedal: { sooperlooper: ["/sl/-3/set", "wet"], coordinates: [5,0]}

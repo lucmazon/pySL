@@ -19,10 +19,12 @@ class OSCMessage:
         self.path = send_value[0]  # type: str
         self.args = send_value[1:]  # type: str
         self.osc_target = osc_target # type: OSCTarget
-        self.message = liblo.Message(self.path, *self.args)  # type: liblo.Message
 
-    def send(self):
-        liblo.send(self.osc_target.target, self.message)
+    def send(self, additional_args=None):
+        if additional_args is None:
+            additional_args = []
+        args = self.args + additional_args
+        liblo.send(self.osc_target.target, liblo.Message(self.path, *args))
 
     def __repr__(self):
         return "OSCMessage({0}, {1}, {2})".format(self.osc_target, self.path, self.args)
@@ -36,16 +38,27 @@ class Coordinates:
     def __repr__(self):
         return "(x: {0},y: {1})".format(self.x, self.y)
 
-class Switch:
+class OSCEnabledSender:
     def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
         self.coordinates = Coordinates(*coordinates)  # type: Coordinates
-        self.label = config_line.get('label')  # type: str
-        self.modal = config_line.get('modal')
         self.osc_messages = [] # type: List[OSCMessage]
         for osc_target in osc_targets:
             message = config_line.get(osc_target.name)
             if message:
                 self.osc_messages.append(OSCMessage(osc_target, message))
+
+class Pedal(OSCEnabledSender):
+    def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
+        super().__init__(osc_targets, coordinates, config_line)
+
+    def __repr__(self):
+        return "<Pedal: {0}, osc_messages: {1}>".format(self.coordinates, self.osc_messages)
+
+class Switch(OSCEnabledSender):
+    def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
+        super().__init__(osc_targets, coordinates, config_line)
+        self.label = config_line.get('label')  # type: str
+        self.modal = config_line.get('modal')
 
     def __repr__(self):
         return "<coordinates: {0}, label: '{1}', modal: {2}, osc_messages: {3}>".format(self.coordinates, self.label, self.modal, self.osc_messages)
@@ -72,6 +85,9 @@ class Config:
         self.layers = []  # type: List[Layer]
         for layer_line in data.get('layers'):
             self.layers.append(Layer(self.osc_targets, self.grid, layer_line))
+
+        pedal_line = data.get('pedal')
+        self.pedal = Pedal(self.osc_targets, pedal_line.get('coordinates'), pedal_line)
 
     def get_current_switch(self, i):
         return self.layers[self.current_layer].switches[i]

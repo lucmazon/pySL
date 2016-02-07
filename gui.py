@@ -2,6 +2,7 @@
 # -*- coding: utf-8 -*-
 
 from tkinter import *
+import tkinter.ttk as ttk
 import argparse
 import threading
 import yaml
@@ -17,6 +18,8 @@ class Gui:
         self.pressed_color = 'red'
         self.config = config
         self.labels = []
+        self.pedal_control = IntVar()
+        self.progress = ttk.Progressbar(master, orient='horizontal', mode='determinate', variable=self.pedal_control)
         self.draw_items()
 
     def trigger_label_color(self, index, button_status):
@@ -27,6 +30,9 @@ class Gui:
     def change_label_text(self, index, label):
         self.labels[index].config(text=label)
 
+    def update_pedal(self, value):
+        self.pedal_control.set(value)
+
     def update_labels(self):
         for index, switch in enumerate(self.config.layers[self.config.current_layer].switches):
             self.change_label_text(index, switch.label)
@@ -36,6 +42,7 @@ class Gui:
             self.labels.append(
                 Label(text=switch.label, bg=self.default_color, fg='white', width=15, bd=4, relief=RAISED))
             self.labels[index].grid(row=switch.coordinates.y, column=switch.coordinates.x)
+        self.progress.grid(row=0, column=5)
 
 
 class ThreadedClient:
@@ -44,7 +51,6 @@ class ThreadedClient:
         self.first_run = True
         self.master = master
         self.gui = Gui(master, self.config, self.end_application)
-        self.gui.draw_items()
         self.rawhid = RawHID()
         self.running = 1
         self.serverThread = threading.Thread(target=self.run_server)
@@ -52,10 +58,17 @@ class ThreadedClient:
 
     def run_server(self):
         while self.running:
-            changed_keys = self.rawhid.read_hid_status()
             if (self.first_run):
                 self.first_run = False
                 continue
+
+            pedal, changed_keys = self.rawhid.read_hid_status()
+            if pedal:
+                self.gui.update_pedal(pedal.value)
+                for osc_message in self.config.pedal.osc_messages:
+                    value = pedal.value/100
+                    print("sending pedal osc message '{0}, {1} {2}'".format(osc_message.path, osc_message.args, value))
+                    osc_message.send([value])
 
             for changed_key in changed_keys:
                 i = changed_key.id
