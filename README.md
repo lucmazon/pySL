@@ -19,11 +19,11 @@ To make **pySL** work, there are a few things you need:
 - [pyliblo](http://das.nasophon.de/pyliblo/): OSC library
 - [pyYAML](http://pyyaml.org/): to read the configuration file
 
-Basically, on an Ubuntu, you should do the following:
+Basically, on an archlinux, you should do the following:
 
 ```
-sudo apt-get install python3-tk
-sudo pip3 install pyliblo pyyaml
+sudo pacman -S liblo tk python-yaml
+sudo pip install pyliblo pyyaml
 ```
 
 Configuration
