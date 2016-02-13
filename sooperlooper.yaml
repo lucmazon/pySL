@@ -7,39 +7,67 @@
 # |           |  |           |   | o |
 # +-----------+  +-----------+   +---+
 #                                volume pedal
+#
+# it is displayed in the app as:
+#
+# +--------------------------------------------------------+
+# |          +-------+                  +-------++-------+ |
+# |          |   2   |                  |   5   || pedal | |
+# |          +-------+                  +-------++-------+ |
+# | +-------+         +-------++-------+         +-------+ |
+# | |   1   |         |   3   ||   4   |         |   6   | |
+# | +-------+         +-------++-------+         +-------+ |
+# +--------------------------------------------------------+
+
+has_pedal: true
 
 osc:
   - { name: "sooperlooper", host: "localhost", port: "9951" }
 
-physical_layout:  # layout object, describing how the button are physically placed
-  width: 6  # width of the grid
-  height: 2  # height of the grid
-  grid: # list containing the coordinates (x, y) of the buttons, (0, 0) being the top-left corner.
-        # the order in which the buttons are given must correspond to their configuration below
-    [ [0,1], [1,0], [2,1], [3,1], [4,0], [5,1] ]
-layers: # list of possible layers if you don't have a lot of buttons
-  - [
-    { label: "all", modal: 1 },
-    { label: "move", modal: 2 },
-    { label: "undo", sooperlooper: ["/sl/-3/hit", "undo"] },
-    { label: "record", sooperlooper: ["/sl/-3/hit", "record"] }, # -3 means selected loop
-    { label: "overdub", sooperlooper: ["/sl/-3/hit", "overdub"] },
-    { label: "multiply", sooperlooper: ["/sl/-3/hit", "multiply"] }
-  ]
-  - [
-    { label: "all", modal: 1 },
-    { label: "move", modal: 2 },
-    { label: "undo_all", sooperlooper: ["/sl/-3/hit", "undo_all"] },
-    { label: "solo", sooperlooper: ["/sl/-3/hit", "solo"] },
-    { label: "next", sooperlooper: ["/sl/-2/set", "select_next_loop", 0.0] },
-    { label: "undo_all", sooperlooper: ["/sl/-1/hit", "undo_all"] },
-  ]
-  - [
-    { label: "all", modal: 1 },
-    { label: "move", modal: 2 },
-    { label: "undo_all", sooperlooper: ["/sl/-1/hit", "undo_all"] },
-    { label: "b", sooperlooper: ["/sl/", ""] },
-    { label: "b", sooperlooper: ["/sl/", ""] },
-    { label: "b", sooperlooper: ["/sl/", ""] },
-  ]
-pedal: { sooperlooper: ["/sl/-3/set", "wet"], coordinates: [5,0]}
+switches_grid: # list containing the coordinates (x, y) of the switches, (0, 0) being the top-left corner.
+      # the order in which the switches are given must correspond to their configuration below
+  [ [0,1], [1,0], [2,1], [3,1], [4,0], [5,1] ]
+
+pedals_grid:
+  [ [5,0] ]
+
+hardware: # usb properties of you raw HID device
+  id_vendor: 0x16c0 # id_vendor and id_product given by `lsusb`
+  id_product: 0x0480
+  max_potentiometer_value: 255
+  switches: [2, 3, 4, 5, 6, 7] # which item from the raw HID packet to use for each switch in the grid
+  pedals: [8]
+
+layers: # list of possible layers if you don't have a lot of switches
+  - switches:
+      - { label: "all", modal: 1 }
+      - { label: "move", modal: 2 }
+      - { label: "undo", sooperlooper: ["/sl/-3/hit", "undo"] }
+      - { label: "record", sooperlooper: ["/sl/-3/hit", "record"] } # -3 means selected loop
+      - { label: "overdub", sooperlooper: ["/sl/-3/hit", "overdub"] }
+      - { label: "multiply", sooperlooper: ["/sl/-3/hit", "multiply"] }
+
+    pedals:
+      - {} # I wanna be able to change the pedal value without it sending messages
+
+  - switches:
+      - { label: "all", modal: 1 }
+      - { label: "move", modal: 2 }
+      - { label: "reset_current", sooperlooper: ["/sl/-3/hit", "undo_all"] }
+      - { label: "solo", sooperlooper: ["/sl/-3/hit", "solo"] }
+      - { label: "next", sooperlooper: ["/sl/-2/set", "select_next_loop", 0.0] }
+      - { label: "undo_all", sooperlooper: ["/sl/-1/hit", "undo_all"] }
+
+    pedals:
+      - { sooperlooper: ["/sl/-3/set", "wet"] } # no labels for pedals
+
+  - switches:
+      - { label: "all", modal: 1 }
+      - { label: "move", modal: 2 }
+      - { label: "reset_all", sooperlooper: ["/sl/-1/hit", "undo_all"] }
+      - { label: "replace", sooperlooper: ["/sl/", ""] }
+      - { label: "substitute", sooperlooper: ["/sl/", ""] }
+      - { label: "insert", sooperlooper: ["/sl/", ""] }
+
+    pedals:
+      - { sooperlooper: ["/sl/-1/set", "wet"] }

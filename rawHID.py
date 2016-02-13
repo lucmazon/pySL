@@ -7,12 +7,15 @@ import usb.util
 from enum import Enum
 
 MAX_POTENTIOMETER_VALUE = 255
+# ID for a teensy 2
+ID_VENDOR = 0x16c0
+ID_PRODUCT = 0x0480
 
 class ButtonStatus(Enum):
     PRESSED = 1
     RELEASED = 0
 
-class Button:
+class Switch:
     def __init__(self, id, status):
         self.id = id
         self.status = status
@@ -35,8 +38,8 @@ class Pedal:
         return "<Pedal {0}, {1}>".format(self.id, self.value)
 
 class RawHID:
-    def __init__(self):
-        self.dev = usb.core.find(idVendor=0x16c0, idProduct=0x0480)
+    def __init__(self, max_potentiometer_value=MAX_POTENTIOMETER_VALUE, id_vendor=ID_VENDOR, id_product=ID_PRODUCT, switches_range=range(2, 8), pedals_range=range(25,26)):
+        self.dev = usb.core.find(idVendor=id_vendor, idProduct=id_product)
         if self.dev is None:
             raise ValueError('Our device is not connected')
         # first endpoint
@@ -50,26 +53,32 @@ class RawHID:
           # claim the device
           usb.util.claim_interface(self.dev, self.interface)
 
-        self.statuses = []
-        for index in range(1,7):
-            self.statuses.append(Button(index, ButtonStatus.RELEASED))
-        self.statuses.append(Pedal(7, MAX_POTENTIOMETER_VALUE))
+        self.switches_range = switches_range
+        self.pedals_range = pedals_range
 
-    def interpret_HID_packet(self, data):
-        new_pedal = Pedal(7, data[25])
-        changed_pedal = None
-        if (self.statuses[6] != new_pedal):
-            changed_pedal = new_pedal
-        self.statuses[6] = new_pedal
+        self.switches_statuses = []
+        for index in switches_range:
+            self.switches_statuses.append(Switch(index, ButtonStatus.RELEASED))
 
-        changed_buttons = [] # type: List[Button]
-        for index, key in enumerate([2, 3, 4, 5, 6, 7]):
-            new_status = Button(index, ButtonStatus.PRESSED if data[key] else ButtonStatus.RELEASED)
-            if (self.statuses[index] != new_status):
-                changed_buttons.append(new_status)
-            self.statuses[index] = new_status
-
-        return changed_pedal, changed_buttons
+        self.pedals_statuses = []
+        for index in pedals_range:
+            self.pedals_statuses.append(Pedal(index, max_potentiometer_value))
 
     def read_hid_status(self):
-        return self.interpret_HID_packet(self.dev.read(self.endpoint.bEndpointAddress, self.endpoint.wMaxPacketSize))
+        data = self.dev.read(self.endpoint.bEndpointAddress, self.endpoint.wMaxPacketSize)
+
+        changed_pedals = [] # type: List[Pedal]
+        for index, key in enumerate(self.pedals_range):
+            new_pedal = Pedal(index, data[key])
+            if (self.pedals_statuses[index] != new_pedal):
+                changed_pedals.append(new_pedal)
+            self.pedals_statuses[index] = new_pedal
+
+        changed_buttons = [] # type: List[Switch]
+        for index, key in enumerate(self.switches_range):
+            new_switch = Switch(index, ButtonStatus.PRESSED if data[key] else ButtonStatus.RELEASED)
+            if (self.switches_statuses[index] != new_switch):
+                changed_buttons.append(new_switch)
+            self.switches_statuses[index] = new_switch
+
+        return changed_pedals, changed_buttons

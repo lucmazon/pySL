@@ -3,6 +3,7 @@
 
 import liblo
 from typing import List
+from rawHID import RawHID
 
 class OSCTarget:
     def __init__(self, osc_line):
@@ -39,8 +40,8 @@ class Coordinates:
         return "(x: {0},y: {1})".format(self.x, self.y)
 
 class OSCEnabledSender:
-    def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
-        self.coordinates = Coordinates(*coordinates)  # type: Coordinates
+    def __init__(self, osc_targets: List[OSCTarget], coordinates: Coordinates, config_line):
+        self.coordinates = coordinates # type: Coordinates
         self.osc_messages = [] # type: List[OSCMessage]
         for osc_target in osc_targets:
             message = config_line.get(osc_target.name)
@@ -48,14 +49,14 @@ class OSCEnabledSender:
                 self.osc_messages.append(OSCMessage(osc_target, message))
 
 class Pedal(OSCEnabledSender):
-    def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
+    def __init__(self, osc_targets: List[OSCTarget], coordinates: Coordinates, config_line):
         super().__init__(osc_targets, coordinates, config_line)
 
     def __repr__(self):
         return "<Pedal: {0}, osc_messages: {1}>".format(self.coordinates, self.osc_messages)
 
 class Switch(OSCEnabledSender):
-    def __init__(self, osc_targets: List[OSCTarget], coordinates, config_line):
+    def __init__(self, osc_targets: List[OSCTarget], coordinates: Coordinates, config_line):
         super().__init__(osc_targets, coordinates, config_line)
         self.label = config_line.get('label')  # type: str
         self.modal = config_line.get('modal')
@@ -63,34 +64,66 @@ class Switch(OSCEnabledSender):
     def __repr__(self):
         return "<coordinates: {0}, label: '{1}', modal: {2}, osc_messages: {3}>".format(self.coordinates, self.label, self.modal, self.osc_messages)
 
+class GridItem:
+    def __init__(self, grid_line):
+        self.coordinates = Coordinates(*grid_line['coordinates'])
+        self.type = grid_line['type']
+
+    def __repr__(self):
+        return "<type: {0}, {1}>".format(self.type, self.coordinates)
+
 class Layer:
-    def __init__(self, osc_targets, grid, switches):
+    def __init__(self, osc_targets, config, layer_line):
+        switches_grid = [] # type: List[Coordinates]
+        for grid_line in config.get('switches_grid'):
+            switches_grid.append(Coordinates(*grid_line))
+
+        pedals_grid = [] # type: List[Coordinates]
+        for grid_line in config.get('pedals_grid'):
+            pedals_grid.append(Coordinates(*grid_line))
+
         self.switches = []  # type: List[Switch]
-        for index, switch_line in enumerate(switches):
-            self.switches.append(Switch(osc_targets, grid[index], switch_line))
+        self.pedals = [] # type: List[Pedal]
+
+        for index, switch_line in enumerate(layer_line.get('switches')):
+            self.switches.append(Switch(osc_targets, switches_grid[index], switch_line))
+
+        for index, pedal_line in enumerate(layer_line.get('pedals')):
+            self.pedals.append(Pedal(osc_targets, pedals_grid[index], pedal_line))
 
     def __repr__(self):
         return repr(self.switches)
 
+class Hardware:
+    def __init__(self, hardware_config):
+        self.id_vendor = hardware_config.get('id_vendor')
+        self.id_product = hardware_config.get('id_product')
+        self.max_potentiometer_value = hardware_config.get('max_potentiometer_value')
+        self.switches = hardware_config.get('switches')
+        self.pedals = hardware_config.get('pedals')
+
 class Config:
     def __init__(self, data, args):
-        self.physical_layout = data.get('physical_layout')
-        self.grid = self.physical_layout.get('grid')
         self.current_layer = 0
+
+        self.has_pedal = data.get('has_pedal')
 
         self.osc_targets = [] # type: List[OSCTarget]
         for osc_line in data.get('osc'):
             self.osc_targets.append(OSCTarget(osc_line))
 
-        self.layers = []  # type: List[Layer]
-        for layer_line in data.get('layers'):
-            self.layers.append(Layer(self.osc_targets, self.grid, layer_line))
+        hardware = Hardware(data.get('hardware'))
+        self.rawhid = RawHID(max_potentiometer_value=hardware.max_potentiometer_value, id_product=hardware.id_product, id_vendor=hardware.id_vendor)
 
-        pedal_line = data.get('pedal')
-        self.pedal = Pedal(self.osc_targets, pedal_line.get('coordinates'), pedal_line)
+        self.layers = []  # type: List[Layer]
+        for layer in data.get('layers'):
+            self.layers.append(Layer(self.osc_targets, data, layer))
 
     def get_current_switch(self, i):
         return self.layers[self.current_layer].switches[i]
+
+    def get_current_pedal(self, i):
+        return self.layers[self.current_layer].pedals[i]
 
     def switch_to_layer(self, layer_index):
         self.current_layer = layer_index
