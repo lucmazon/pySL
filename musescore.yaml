@@ -1,0 +1,62 @@
+has_pedal: false
+
+osc:
+  - { name: "musescore", host: "localhost", port: "5282" }
+
+switches_grid:
+  [ [0,1], [1,0], [2,1], [3,1], [4,0], [5,1] ]
+
+pedals_grid:
+  [ [5,0] ]
+
+hardware:
+  id_vendor: 0x16c0
+  id_product: 0x0480
+  max_potentiometer_value: 255
+  switches: [2, 3, 4, 5, 6, 7]
+  pedals: [8]
+
+layers:
+  - switches:
+      - { label: "modal", modal: 1 }
+      - { label: "modal", modal: 2 }
+      - { label: "modal", modal: 3 }
+      - { label: "blanche", musescore: ["/actions/pad-note-2"] }
+      - { label: "noire", musescore: ["/actions/pad-note-4"] }
+      - { label: "croche", musescore: ["/actions/pad-note-8"] }
+
+    pedals:
+      - {}
+
+  - switches:
+      - { label: "modal", modal: 1 }
+      - { label: "modal", modal: 2 }
+      - { label: "modal", modal: 3 }
+      - { label: "ronde", musescore: ["/actions/pad-note-1"] }
+      - { label: "double", musescore: ["/actions/pad-note-16"] }
+      - { label: "liaison", musescore: ["/actions/tie"] }
+
+    pedals:
+      - {}
+
+  - switches:
+      - { label: "modal", modal: 1 }
+      - { label: "modal", modal: 2 }
+      - { label: "modal", modal: 3 }
+      - { label: "soupir", musescore: ["/actions/pad-rest"] }
+      - { label: "point", musescore: ["/actions/pad-dot"] }
+      - { label: "input", musescore: ["/actions/note-input"] }
+
+    pedals:
+      - {}
+
+  - switches:
+      - { label: "modal", modal: 1 }
+      - { label: "modal", modal: 2 }
+      - { label: "modal", modal: 3 }
+      - { label: "next", musescore: ["/actions/next-element"] }
+      - { label: "delete", musescore: ["/actions/delete"] }
+      - { label: "previous", musescore: ["/actions/prev-element"] }
+
+    pedals:
+      - {}

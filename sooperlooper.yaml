@@ -40,34 +40,34 @@ hardware: # usb properties of you raw HID device
 
 layers: # list of possible layers if you don't have a lot of switches
   - switches:
-      - { label: "all", modal: 1 }
-      - { label: "move", modal: 2 }
+      - { label: "mode1", modal: 1 }
+      - { label: "mode2", modal: 2 }
       - { label: "undo", sooperlooper: ["/sl/-3/hit", "undo"] }
-      - { label: "record", sooperlooper: ["/sl/-3/hit", "record"] } # -3 means selected loop
-      - { label: "overdub", sooperlooper: ["/sl/-3/hit", "overdub"] }
+      - { label: "overdub", sooperlooper: ["/sl/-3/hit", "overdub"] } # -3 means selected loop
+      - { label: "record", sooperlooper: ["/sl/-3/hit", "record"] }
       - { label: "multiply", sooperlooper: ["/sl/-3/hit", "multiply"] }
 
     pedals:
       - {} # I wanna be able to change the pedal value without it sending messages
 
   - switches:
-      - { label: "all", modal: 1 }
-      - { label: "move", modal: 2 }
+      - { label: "mode1", modal: 1 }
+      - { label: "mode2", modal: 2 }
+      - { label: "undo", sooperlooper: ["/sl/-3/hit", "undo"] }
       - { label: "reset_current", sooperlooper: ["/sl/-3/hit", "undo_all"] }
+      - { label: "reset_all", sooperlooper: ["/sl/-1/hit", "undo_all"] }
+      - { label: "redo", sooperlooper: ["/sl/-3/hit", "redo"] }
+
+    pedals:
+      - { sooperlooper: ["/sl/-1/set", "wet"] } # no labels for pedals
+
+  - switches:
+      - { label: "mode1", modal: 1 }
+      - { label: "mode2", modal: 2 }
+      - { label: "undo", sooperlooper: ["/sl/-3/hit", "undo"] }
       - { label: "solo", sooperlooper: ["/sl/-3/hit", "solo"] }
       - { label: "next", sooperlooper: ["/sl/-2/set", "select_next_loop", 0.0] }
-      - { label: "undo_all", sooperlooper: ["/sl/-1/hit", "undo_all"] }
+      - { label: "once", sooperlooper: ["/sl/-3/hit", "oneshot"] }
 
     pedals:
       - { sooperlooper: ["/sl/-3/set", "wet"] } # no labels for pedals
-
-  - switches:
-      - { label: "all", modal: 1 }
-      - { label: "move", modal: 2 }
-      - { label: "reset_all", sooperlooper: ["/sl/-1/hit", "undo_all"] }
-      - { label: "replace", sooperlooper: ["/sl/", ""] }
-      - { label: "substitute", sooperlooper: ["/sl/", ""] }
-      - { label: "insert", sooperlooper: ["/sl/", ""] }
-
-    pedals:
-      - { sooperlooper: ["/sl/-1/set", "wet"] }
